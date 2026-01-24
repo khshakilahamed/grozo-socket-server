@@ -19,12 +19,37 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("user connected ", socket.id);
 
+  //   use for make user online
   socket.on("identity", async (userId) => {
     console.log("userId: ", userId);
-    await axios.post(`${process.env.NEXT_BASE_URL}/api/socket/connect`, {
-      userId: userId,
-      socketId: socket.id,
-    });
+    try {
+      await axios.post(`${process.env.NEXT_BASE_URL}/api/socket/connect`, {
+        userId: userId,
+        socketId: socket.id,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  //   for update user location
+  socket.on("update-location", async ({ userId, latitude, longitude }) => {
+    console.log("userId: ", userId);
+    console.log("latitude: ", latitude);
+    console.log("longitude: ", longitude);
+
+    const location = [longitude, latitude];
+    try {
+      await axios.post(
+        `${process.env.NEXT_BASE_URL}/api/socket/update-location`,
+        {
+          userId: userId,
+          location: location,
+        },
+      );
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   socket.on("disconnect", () => {
