@@ -40,7 +40,10 @@ io.on("connection", (socket) => {
     console.log("latitude: ", latitude);
     console.log("longitude: ", longitude);
 
-    const location = [longitude, latitude];
+    const location = {
+      type: "Point",
+      coordinates: [longitude, latitude],
+    };
     try {
       await axios.post(
         `${process.env.NEXT_BASE_URL}/api/socket/update-location`,
@@ -49,6 +52,11 @@ io.on("connection", (socket) => {
           location: location,
         },
       );
+
+      io.emit("update-deliveryBoy-location", {
+        userId: userId,
+        location: location,
+      });
     } catch (error) {
       console.log(error);
     }
