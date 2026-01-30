@@ -62,6 +62,23 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("join-room", (roomId) => {
+    console.log("join chat room with: ", roomId);
+    socket.join(roomId);
+  });
+
+  socket.on("send-message", async (message) => {
+    console.log(message);
+
+    try {
+      await axios.post(`${process.env.NEXT_BASE_URL}/api/chat/save`, message);
+
+      io.to(message?.roomId).emit("send-message", message);
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log("User disconnected ", socket.id);
   });
